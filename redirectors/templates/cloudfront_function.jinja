@@ -1,0 +1,15 @@
+// Sushi Train CloudFront Function Redirector
+function handler(event) {
+    var request = event.request;
+    var headers = request.headers;
+{% for redirector_path in redirector_paths %}
+    if (request.uri == '{{ redirector_path }}')
+    {
+        headers['x-redirector-hostname'] = {value: '{{ redirector_hostname }}'}
+        headers['x-redirector-path'] = {value: '{{ redirector_path }}'}
+        headers['x-forwarded-host'] = {value: request.headers.host.value}
+        request.uri = '{{ delivery_path }}'
+    }
+{% endfor %}
+   return request;
+}

@@ -1,0 +1,21 @@
+# Sushi Train Apache Redirector
+ServerSignature Off
+ServerTokens Prod
+
+<VirtualHost *:443>
+    SSLEngine on
+    SSLCertificateChainFile  /etc/letsencrypt/live/{{ redirector_hostname }}fullchain.pem
+    SSLCertificateKeyFile    /etc/letsencrypt/live/{{ redirector_hostname }}/privkey.pem
+    SSLCertificateFile       /etc/letsencrypt/live/{{ redirector_hostname }}/cert.pem
+
+    ServerName {{ redirector_hostname }}
+    DocumentRoot /var/www/html
+    {% for redirector_path in redirector_paths %}
+    <LocationMatch "{{ redirector_path }}">
+    ProxyPass http://127.0.0.1:9000/delivery
+    ProxyPassReverse http://127.0.0.1:9000/delivery
+    RequestHeader set X-Redirector-Hostname "{{ redirector_hostname }}"
+    RequestHeader set X-Redirector-Path "{{ redirector_path }}"
+    </LocationMatch>
+    {% endfor %}
+</VirtualHost>

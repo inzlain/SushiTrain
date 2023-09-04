@@ -1,0 +1,1 @@
+async function a(t){if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(t);else{const e=document.createElement("temp-text-area");e.style.opacity="0",e.value=t,e.style.left="-100000px",e.style.position="absolute",document.body.prepend(e),e.select();try{document.execCommand("copy")}catch(o){console.error(o)}finally{e.remove()}}}export{a as c};

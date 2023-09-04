@@ -1,0 +1,53 @@
+version: '3.9'
+
+services:
+  postgres:
+    container_name: sushitrain-postgres
+    image: postgres:15.2
+    restart: always
+    environment:
+      POSTGRES_DB: sushitrain
+      POSTGRES_USER: sushitrain
+      POSTGRES_PASSWORD: sushitrain
+    volumes:
+      - postgres-lib:/var/lib/postgresql
+      - postgres-log:/var/log/postgresql
+      - postgres-etc:/etc/postgresql
+  sushitrain:
+    container_name: sushitrain-app
+    build: .
+    restart: "always"
+    depends_on:
+      - postgres
+    volumes:
+     - ./logs/:/opt/sushitrain/logs/
+# Uncomment to expose the management and delivery interfaces directly for debugging purposes
+#    ports:
+#      - "127.0.0.1:8000:8000"
+#      - "127.0.0.1:9000:9000"
+  nginx-management:
+    container_name: sushitrain-nginx-management
+    build: ./docker/nginx-management
+    restart: "always"
+    ports:
+      - "${MANAGEMENT_BIND_IP}:${MANAGEMENT_PORT}:8443"
+    volumes:
+      - /etc/letsencrypt/:/etc/letsencrypt/
+    environment:
+        - MANAGEMENT_HOSTNAME
+  nginx-delivery:
+    container_name: sushitrain-nginx-delivery
+    build: ./docker/nginx-delivery
+    restart: "always"
+    ports:
+      - "${DELIVERY_BIND_IP}:${DELIVERY_PORT}:9443"
+    volumes:
+      - /etc/letsencrypt/:/etc/letsencrypt/
+    environment:
+        - DELIVERY_HOSTNAME
+        - DELIVERY_PATH
+
+volumes:
+  postgres-lib:
+  postgres-log:
+  postgres-etc:

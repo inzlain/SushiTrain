@@ -1,0 +1,16 @@
+# Sushi Train CloudFront Lambda@Edge Redirector
+import json
+
+def lambda_handler(event, context):
+        request = event['Records'][0]['cf']['request']
+        headers = request['headers']
+{% for redirector_path in redirector_paths %}
+        if request['uri'] == '{{ redirector_path }}':
+            # Set required Sushi Train headers
+            headers['x-redirector-hostname'] = [{'key': 'X-Redirector-Hostname', 'value': '{{ redirector_hostname }}'}]
+            headers['x-redirector-path'] = [{'key': 'X-Redirector-Path', 'value': '{{ redirector_path }}'}]
+            headers['x-forwarded-host'] = [{'key': 'X-Forwarded-Host', 'value': '{{ redirector_hostname }}'}]
+            # Rewrite the URI to forward requests to Sushi Train
+            request['uri'] = '{{ delivery_path }}'
+{% endfor %}
+        return request

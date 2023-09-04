@@ -1,0 +1,27 @@
+# Sushi Train NGINX Redirector
+server {
+    listen 443 ssl default_server;
+    listen [::]:443 ssl default_server;
+    ssl_certificate     /etc/letsencrypt/live/{{ redirector_hostname }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ redirector_hostname }}/privkey.pem;
+
+    server_name {{ redirector_hostname }};
+    server_tokens off;
+    root /var/www/html;
+{% for redirector_path in redirector_paths %}
+    location = {{ redirector_path }} {
+        # Forward requests to Sushi Train
+        proxy_pass https://{{ delivery_hostname }}:{{ delivery_port }}{{ delivery_path }};
+        # Set required Sushi Train headers
+        proxy_set_header X-Redirector-Hostname {{ redirector_hostname }};
+        proxy_set_header X-Redirector-Path {{ redirector_path }};
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-For $remote_addr;
+    }
+{% endfor %}
+    location / {
+        # First attempt to serve request as file, then
+        # as directory, then fall back to displaying a 404.
+        try_files $uri $uri/ =404;
+    }
+}

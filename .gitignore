@@ -56,8 +56,5 @@ db.sqlite3-wal
 # MaxMind Databases
 thirdparty/maxmind/*.mmdb
 
-# Payload modules
-payloads/modules/utility/
-
 # Logs
 logs/*.json

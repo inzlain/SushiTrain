@@ -189,7 +189,8 @@ class PayloadGenerateView(HTTPMethodView):
         try:
             payload_log_id = await generate_payload(payload_id, True)
             response = {'error': '', 'generated': True, 'payload_log_id': payload_log_id}
-        except Exception:
+        except Exception as e:
+            print("Error generating payload: " + str(e))
             response = {'error': 'Error generating payload', 'generated': False}
         return json(response)
 

@@ -25,7 +25,7 @@ async def refresh_module_library():
         # Load the modules
         for filename in fnmatch.filter(files, '*.py'):
             try:
-                if filename != '__init__.py':
+                if filename != '__init__.py' and filename != 'common.py':
                     new_module = ModuleLibrary()
 
                     module_path = os.path.join(root, filename[0:-3]) \

@@ -8,7 +8,7 @@ class Module:
 
         self.info = {
             'Author': 'Alain Homewood',
-            'Description': 'Generates randomly generated PNG image for use as a tracking pixel',
+            'Description': 'Generates a randomly generated PNG image for use as a tracking pixel',
         }
 
         self.options = {

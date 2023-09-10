@@ -9,7 +9,6 @@ class Module:
         self.info = {
             'Author': 'Alain Homewood',
             'Description': 'Drops an inline stored file to disk',
-            'SupportsInput': True
         }
 
         self.options = {

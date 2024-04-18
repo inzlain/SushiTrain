@@ -70,8 +70,8 @@ async def slack_notify(path, request_log):
     template = Template(path.slack_template)
     message = template.render(path=request_log.redirector_path,
                               notes=path.notes,
-                              redirector=request_log.redirector_hostname,
-                              host_header=request_log.request_hostname,
+                              redirector=request_log.redirector_hostname.replace(".", "[.]"),
+                              host_header=request_log.request_hostname.replace(".", "[.]"),
                               method=request_log.request_method,
                               action=request_log.action,
                               allowed=request_log.allowed,

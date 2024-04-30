@@ -388,9 +388,11 @@ async def http_request_handler(request):
         request_log.request_headers = request_headers
 
         if 'X-Forwarded-For' in request.headers:
-            # Accepted practice is to put the original client IP address in the leftmost position
-            # Truncate at 50 characters in case we get some really weird invalid value
-            request_log.request_ip = request.headers['X-Forwarded-For'].split(',')[0][:50]
+            # Redirectors are expected to explicitly set a trusted value for this header
+            # If a trusted value is not set, then we take the rightmost value (one hop before the redirector)
+            # See https://github.com/inzlain/SushiTrain/issues/1 for discussion
+            # Also truncate at 50 characters in case we get some really weird invalid value
+            request_log.request_ip = request.headers['X-Forwarded-For'].split(',')[-1][:50]
 
         if 'X-Forwarded-Host' in request.headers:
             request_log.request_hostname = request.headers['X-Forwarded-Host']

@@ -392,7 +392,7 @@ async def http_request_handler(request):
             # If a trusted value is not set, then we take the rightmost value (one hop before the redirector)
             # See https://github.com/inzlain/SushiTrain/issues/1 for discussion
             # Also truncate at 50 characters in case we get some really weird invalid value
-            request_log.request_ip = request.headers['X-Forwarded-For'].split(',')[-1][:50]
+            request_log.request_ip = request.headers['X-Forwarded-For'].split(',')[-1].strip()[:50]
 
         if 'X-Forwarded-Host' in request.headers:
             request_log.request_hostname = request.headers['X-Forwarded-Host']

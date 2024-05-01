@@ -8,7 +8,6 @@ function handler(event) {
     {
         headers['x-redirector-hostname'] = {value: '{{ redirector_hostname }}'}
         headers['x-redirector-path'] = {value: '{{ redirector_path }}'}
-        headers['x-forwarded-for'] = {value: viewer.ip}
         headers['x-forwarded-host'] = {value: request.headers.host.value}
         request.uri = '{{ delivery_path }}'
     }

@@ -9,7 +9,7 @@ def lambda_handler(event, context):
             # Set required Sushi Train headers
             headers['x-redirector-hostname'] = [{'key': 'X-Redirector-Hostname', 'value': '{{ redirector_hostname }}'}]
             headers['x-redirector-path'] = [{'key': 'X-Redirector-Path', 'value': '{{ redirector_path }}'}]
-            headers['x-forwarded-host'] = [{'key': 'X-Forwarded-Host', 'value': '{{ redirector_hostname }}'}]
+            headers['x-forwarded-host'] = [{'key': 'X-Forwarded-Host', 'value': headers['host'][0]['value']}]
             # Rewrite the URI to forward requests to Sushi Train
             request['uri'] = '{{ delivery_path }}'
 {% endfor %}

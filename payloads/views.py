@@ -212,7 +212,7 @@ class PayloadLogsView(HTTPMethodView):
             if limit < 1:
                 limit = 1
 
-        log_count = await PayloadLog.all().order_by('-datetime').count()
+        log_count = await PayloadLog.filter(payload_id=payload_id).all().order_by('-datetime').count()
         number_of_pages = math.ceil(log_count / limit)
         start = (page - 1) * limit
 

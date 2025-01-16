@@ -389,10 +389,10 @@ async def http_request_handler(request):
 
         if 'X-Forwarded-For' in request.headers:
             # Redirectors are expected to explicitly set a trusted value for this header
-            # If a trusted value is not set, then we take the rightmost value (one hop before the redirector)
-            # See https://github.com/inzlain/SushiTrain/issues/1 for discussion
+            # If a trusted value is not set, then we are using the left-most value by default at this early stage
+            # Once we know this is a valid redirector, we check if we should take the right-most value instead
             # Also truncate at 50 characters in case we get some really weird invalid value
-            request_log.request_ip = request.headers['X-Forwarded-For'].split(',')[-1].strip()[:50]
+            request_log.request_ip = request.headers['X-Forwarded-For'].split(',')[0].strip()[:50]
 
         if 'X-Forwarded-Host' in request.headers:
             request_log.request_hostname = request.headers['X-Forwarded-Host']
@@ -461,6 +461,13 @@ async def http_request_handler(request):
             for header in redirector.headers:
                 response.headers[header.header] = header.value
                 request_log.response_headers += "{0}: {1}\n".format(header.header, header.value)
+
+            # Check if we need to handle the X-Forward-For header differently
+            if redirector.prefer_leftmost_x_forwarded_for is False:
+                await request_log.add_message("Using right-most value of X-Forwarded-For header")
+                request_log.request_ip = request.headers['X-Forwarded-For'].split(',')[-1].strip()[:50]
+            else:
+                await request_log.add_message("Using left-most value of X-Forwarded-For header")
 
             path = await Path.filter(redirector_id=redirector.pk, path=request.headers['X-Redirector-Path']).first() \
                 .prefetch_related('allow_headers', 'deny_headers')

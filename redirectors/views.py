@@ -41,6 +41,11 @@ async def redirector_edit(request, redirector_id=None):
         else:
             redirector.https = False
 
+        if request.json['prefer_leftmost_x_forwarded_for'] == 'yes':
+            redirector.prefer_leftmost_x_forwarded_for = True
+        else:
+            redirector.prefer_leftmost_x_forwarded_for = False
+
         if 'default_policy_id' in request.json and request.json['default_policy_id'] and request.json['default_policy_id'] != 'null':
             redirector.default_policy_id = request.json['default_policy_id']
         else:
@@ -57,7 +62,7 @@ async def redirector_edit(request, redirector_id=None):
 
         # Process the headers
         if request.json['headers'] != '':
-            for line in request.json['headers'].splitlines():
+            for line in request.json['headers'].splitline():
                 header = line.split(':', 1)
 
                 if len(header) == 2 and header[0] != '':
@@ -296,6 +301,11 @@ class RedirectorView(HTTPMethodView):
             else:
                 redirector['https'] = 'no'
 
+            if redirector['prefer_leftmost_x_forwarded_for']:
+                redirector['prefer_leftmost_x_forwarded_for'] = 'yes'
+            else:
+                redirector['prefer_leftmost_x_forwarded_for'] = 'no'
+
             redirector['paths'] = await Path.filter(redirector__id=redirector_id).all().order_by('path').values()
 
             headers = await RedirectorHeader.filter(redirector__id=redirector_id).all()
@@ -350,6 +360,8 @@ class RedirectorDeployView(HTTPMethodView):
                 template = environment.get_template("nginx.jinja")
             elif redirector_type == "apache":
                 template = environment.get_template("apache.jinja")
+            elif redirector_type == "azure_function":
+                template = environment.get_template("azure_function.jinja")
             elif redirector_type == "cloudfront_lambda":
                 template = environment.get_template("cloudfront_lambda.jinja")
             elif redirector_type == "cloudfront_function":

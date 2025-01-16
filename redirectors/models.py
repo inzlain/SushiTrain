@@ -11,6 +11,7 @@ class Redirector(Model):
     default_logging = fields.BooleanField(default=True, blank=False)
     default_logging_request_body = fields.BooleanField(default=True, blank=False)
     default_logging_response_body = fields.BooleanField(default=True, blank=False)
+    prefer_leftmost_x_forwarded_for = fields.BooleanField(default=True, blank=False)
 
     notes = fields.TextField(default='', blank=True)
     # Add Owner/Operator field and link to users model?

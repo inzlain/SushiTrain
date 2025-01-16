@@ -1,0 +1,26 @@
+# Sushi Train Azure Function Redirector
+import azure.functions as func
+import logging
+import urllib
+
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+{% for redirector_path in redirector_paths %}
+@app.route(route="function{{loop.index}}")
+def function{{loop.index}}(req: func.HttpRequest) -> func.HttpResponse:
+    request_headers = {}
+    for key, value in dict(req.headers).items():
+        request_headers.update({key : value})
+    request_headers.update({'X-Redirector-Hostname': '{{ redirector_hostname }}'})
+    request_headers.update({'X-Redirector-Path': '{{ redirector_path }}'})
+    request_headers.update({'X-Forwarded-Host': req.headers.get('Host')})
+    request_headers.update({'X-Forwarded-For': req.headers.get('X-Forwarded-For').split(':')[0]})
+    request = urllib.request.Request("{{ delivery_path }}",
+                                     method=req.method,
+                                     data=req.get_body(),
+                                     headers=request_headers)
+    try:
+        with urllib.request.urlopen(request) as response:
+            return func.HttpResponse(response.read(), status_code=response.status, headers=dict(response.headers.items()))
+    except (urllib.error.HTTPError, urllib.error.URLError) as e:
+        return func.HttpResponse(status_code=404)
+{% endfor %}

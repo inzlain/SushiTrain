@@ -29,9 +29,14 @@ class Module:
                 self.options[option]['Value'] = value
 
     def generate(self):
-        if not isinstance(self.options['Minimum Length']['Value'], int):
+        try:
+            self.options['Minimum Length']['Value'] = int(self.options['Minimum Length']['Value'])
+        except ValueError:
             self.options['Minimum Length']['Value'] = 5
-        if not isinstance(self.options['Maximum Length']['Value'], int):
+
+        try:
+            self.options['Maximum Length']['Value'] = int(self.options['Maximum Length']['Value'])
+        except ValueError:
             self.options['Maximum Length']['Value'] = 20
 
         return random_bytes(self.options['Minimum Length']['Value'], self.options['Maximum Length']['Value'])

@@ -12,8 +12,8 @@ COPY delivery.conf /etc/nginx/sites-available/default
 
 # Configure SSL/TLS
 RUN mkdir -p "/etc/nginx/ssl/"
-RUN curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > "/etc/nginx/ssl/options-ssl-nginx.conf"
-RUN curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem > "/etc/nginx/ssl/ssl-dhparams.pem"
+RUN curl -s https://raw.githubusercontent.com/certbot/certbot/refs/heads/main/certbot/src/certbot/_internal/plugins/nginx/tls_configs/options-ssl-nginx.conf > "/etc/nginx/ssl/options-ssl-nginx.conf"
+RUN curl -s https://raw.githubusercontent.com/certbot/certbot/refs/heads/main/certbot/src/certbot/ssl-dhparams.pem > "/etc/nginx/ssl/ssl-dhparams.pem"
 
 # Run NGINX
 COPY ./entrypoint.sh /opt/nginx/entrypoint.sh
